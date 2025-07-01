@@ -1,0 +1,133 @@
+{% extends '../index.html' %}
+{% load humanize %}
+
+{% block context %}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">Hotel Revenue Report</h3>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">Room Revenue</h5>
+                            <p class="card-text h2">${{ total_room_revenue|floatformat:2|intcomma }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">Room Service Revenue</h5>
+                            <p class="card-text h2">${{ total_service_revenue|floatformat:2|intcomma }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Grand Total Revenue</h5>
+                            <p class="card-text h2 font-weight-bold">${{ grand_total_revenue|floatformat:2|intcomma }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <h4 class="mt-4">Booking Revenue Details</h4>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Guest</th>
+                            <th>Room</th>
+                            <th>Price/Night</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in all_bookings %}
+                        <tr>
+                            <td>{{ booking.id }}</td>
+                            <td>{{ booking.guest.user.first_name }} {{ booking.guest.user.last_name }}</td>
+                            <td>{{ booking.roomNumber.number }}</td>
+                            <td>${{ booking.roomNumber.price|floatformat:2|intcomma }}</td>
+                            <td class="text-right">${% widthratio booking.endDate|timeuntil:booking.startDate|slice:"-6:-4"|add:0 1 booking.roomNumber.price %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No bookings found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+             <h4 class="mt-4">Room Service Revenue Details</h4>
+             <div class="table-responsive">
+                <table class="table table-sm table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Service ID</th>
+                            <th>Booking ID</th>
+                            <th>Service Type</th>
+                            <th>Date</th>
+                            <th class="text-right">Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for service in all_room_services %}
+                        <tr>
+                            <td>{{ service.id }}</td>
+                            <td>{{ service.curBooking.id }}</td>
+                            <td>{{ service.servicesType }}</td>
+                            <td>{{ service.createdDate }}</td>
+                            <td class="text-right">${{ service.price|floatformat:2|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No room services found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+<hr>
+
+            <h4 class="mt-4">Detailed Bill List</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Bill ID</th>
+                            <th scope="col">Guest</th>
+                            <th scope="col">Date Generated</th>
+                            <th scope="col" class="text-right">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for bill in all_bills %}
+                        <tr>
+                            <th scope="row">{{ bill.id }}</th>
+                            <td>{{ bill.guest.user.first_name }} {{ bill.guest.user.last_name }}</td>
+                            <td>{{ bill.date }}</td>
+                            <td class="text-right">${{ bill.totalAmount|floatformat:2|intcomma }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No bills have been generated yet. The system will calculate and generate them when you visit this page.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock context %}

@@ -1,0 +1,50 @@
+<div class="container py-5">
+
+    <div class="table-responsive">
+        <div class="table-header row">
+
+            <div class="col-sm-12 col-md-12 col-lg-4 mb-4">
+                <h2>Room Services</h2>
+                <span class="text-muted">The list include last 1 month room services</span>
+            </div>
+
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <th>Guest Name<input type="text" class="form-control border border-secondary"></th>
+                        <th>Room Number<input type="text" class="form-control border border-secondary"></th>
+                        <th>Type<input type="text" class="form-control border border-secondary"></th>
+                        <th>Created Date<input type="date" class="form-control border border-secondary"></th>
+                        <th>Price<input type="text" class="form-control border border-secondary"></th>
+                        <th><button type="submit" class="btn btn-warning">Filter</button></th>
+                    </form>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rs in room_services %}
+                <tr>
+                    <td><a
+                            href="{% url 'guest-profile' rs.curBooking.guest.user.id %}">{{rs.curBooking.guest.user.first_name}}</a>
+                    </td>
+                    <td><a href="{% url 'room-profile' rs.room.number }">{{rs.room.number}}</a></td>
+                    <td>{{rs.servicesType}}</td>
+                    <td>{{rs.createdDate}}</td>
+                    <td>{{rs.price}}</td>
+                    <td>
+                        <form action="{% url 'delete_room_service' rs.id %}" method="POST" onsubmit="return confirm('Are you sure you want to delete this service?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
